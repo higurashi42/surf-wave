@@ -2,8 +2,14 @@ const apiKey = "72cbd248-6883-11f0-bed1-0242ac130006-72cbd2de-6883-11f0-bed1-024
 
 function searchWave() {
   const location = document.getElementById("locationInput").value;
+  const coords = locationCoords[location];
 
-  fetch(`https://api.stormglass.io/v2/weather/point?lat=35.0&lng=139.0&params=waveHeight,windSpeed&source=noaa`, {
+  if (!coords) {
+    document.getElementById("wave-result").textContent = "対応していない地域です。";
+    return;
+  }
+
+  fetch(`https://api.stormglass.io/v2/weather/point?lat=${coords.lat}&lng=${coords.lng}&params=waveHeight,windSpeed&source=noaa`, {
     headers: {
       'Authorization': apiKey
     }
