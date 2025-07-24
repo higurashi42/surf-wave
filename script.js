@@ -20,3 +20,10 @@ function searchWave() {
     console.error(error);
   });
 }
+const locationCoords = {
+  "湘南": { lat: 35.3, lng: 139.5 },
+  "千葉": { lat: 35.6, lng: 140.0 },
+  "茨城": { lat: 36.4, lng: 140.6 },
+  "静岡": { lat: 34.8, lng: 138.4 },
+  "宮崎": { lat: 31.9, lng: 131.4 }
+};
