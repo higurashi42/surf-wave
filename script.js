@@ -1,28 +1,38 @@
-async function getWaveInfo(spot) {
-  // ★スポットに応じた緯度・経度（ここは後で県や海岸名で切り替える予定）
-  const lat = 35.3096;  // 例：湘南
-  const lng = 139.5565;
-
+async function getWaveInfo(locationName) {
   const apiKey = '72cbd248-6883-11f0-bed1-0242ac130006-72cbd2de-6883-11f0-bed1-0242ac130006';
 
+  // サンプルで湘南の座標（他の海岸にしたい場合はここを変更）
+  const latitude = 35.308;
+  const longitude = 139.553;
+
+  const params = 'waveHeight,swellHeight,swellDirection,waveDirection';
+  const url = `https://api.stormglass.io/v2/weather/point?lat=${latitude}&lng=${longitude}&params=${params}`;
+
   try {
-    const response = await fetch(`https://api.stormglass.io/v2/weather/point?lat=${lat}&lng=${lng}&params=waveHeight,windSpeed,waterTemperature,windDirection&source=noaa`, {
+    const response = await fetch(url, {
       headers: {
         'Authorization': apiKey
       }
     });
 
-    const json = await response.json();
-    const data = json.hours[0]; // 最新1時間のデータ
+    if (!response.ok) {
+      throw new Error('APIエラー: ' + response.status);
+    }
 
-    document.getElementById('result').innerHTML = `
-      🌊 <strong>波の高さ：</strong>${data.waveHeight.noaa} m<br>
-      💨 <strong>風速：</strong>${data.windSpeed.noaa} m/s<br>
-      🌬️ <strong>風向き：</strong>${data.windDirection.noaa}°<br>
-      🌡️ <strong>水温：</strong>${data.waterTemperature.noaa} ℃
+    const jsonData = await response.json();
+    const data = jsonData.hours[0]; // 最新の1時間分のデータ
+
+    const info = `
+      🌊 波情報（${locationName}）<br>
+      波の高さ：${data.waveHeight.jp} m<br>
+      うねりの高さ：${data.swellHeight.jp} m<br>
+      波の向き：${data.waveDirection.jp}°<br>
+      うねりの向き：${data.swellDirection.jp}°
     `;
+
+    document.getElementById('wave-result').innerHTML = info;
   } catch (error) {
-    console.error('波情報の取得に失敗しました:', error);
-    document.getElementById('result').innerText = '波情報の取得に失敗しました。';
+    document.getElementById('wave-result').innerHTML = '波情報の取得に失敗しました。';
+    console.error(error);
   }
 }
